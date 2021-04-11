@@ -39,6 +39,9 @@ class TriangleConstraintLayout
     val textViews = arrayOf(
             TextView(context),
             TextView(context),
+            TextView(context),
+            TextView(context),
+            TextView(context),
             TextView(context))
     val button = Button(context)
 
@@ -49,9 +52,12 @@ class TriangleConstraintLayout
         paints[1].color = Color.parseColor("#33bfff")
         paints[2].color = Color.parseColor("#a2cf6e")
 
-        textViews[0].text = "Distance"
-        textViews[1].text = "Speed"
-        textViews[2].text = "Time"
+        textViews[0].text = "Distance (m)"
+        textViews[1].text = "Speed (m/s)"
+        textViews[2].text = "Time (s)"
+        textViews[3].text = ""
+        textViews[4].text = ""
+        textViews[5].text = ""
 
         button.text = "Clear"
         button.setOnClickListener {
@@ -59,6 +65,9 @@ class TriangleConstraintLayout
             editTexts.forEach {
                 it.setText("")
                 it.isEnabled = true
+                textViews[3].setText("")
+                textViews[4].setText("")
+                textViews[5].setText("")
             }
         }
 
@@ -147,7 +156,7 @@ class TriangleConstraintLayout
         val x1Over4 = MathUtils.lerp(left.toFloat(), right.toFloat(), 0.25f)
         val x3Over4 = MathUtils.lerp(left.toFloat(), right.toFloat(), 0.75f)
         val y1Over4Triangle = MathUtils.lerp(top.toFloat(), yMidTriangle, 0.5f)
-        val y3Over4Triangle = MathUtils.lerp(yMidTriangle, bottom.toFloat(), 0.5f)
+        val y3Over4Triangle = MathUtils.lerp(yMidTriangle, bottom.toFloat(), 0.9f)
         val yVMidRight = MathUtils.lerp(top.toFloat(), bottom.toFloat(), 0.5f)
         val xVMidRight = getXFromGivenYLine(
                 left.toFloat() + width / 2,
@@ -185,6 +194,17 @@ class TriangleConstraintLayout
         textViews[2].x = x3Over4 - textViews[2].width / 2
         textViews[2].y = editTexts[2].y - editTexts[2].height
 
+        //
+        textViews[3].x = MathUtils.lerp(xMidBox, xVMidLeft, 0.5f) - textViews[3].width
+        textViews[3].y = MathUtils.lerp(yMidTriangle, yVMidLeft, 0.5f)
+
+        textViews[4].x = MathUtils.lerp(xMidBox, xVMidRight, 0.5f) - textViews[4].width
+        textViews[4].y = MathUtils.lerp(yMidTriangle, yVMidRight, 0.5f)
+
+        textViews[5].x = xMidBox - textViews[5].width / 2
+        textViews[5].y = y3Over4Triangle - textViews[4].height
+        //
+
         paths[0].rewind()
         paths[0].moveTo(left.toFloat(), bottom.toFloat())
         paths[0].lineTo(xMidBox, bottom.toFloat())
@@ -205,12 +225,6 @@ class TriangleConstraintLayout
         paths[1].lineTo(xVMidRight, yVMidLeft)
         paths[1].lineTo(left.toFloat() + width / 2, top.toFloat())
         paths[1].close()
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-
-//        recreatePath()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -235,6 +249,9 @@ class TriangleConstraintLayout
         if (isBitsetMin2()) {
             if ((bitset shr 0) and 1 == 0) {
                 editTexts[0].isEnabled = false
+                textViews[3].setText("=")
+                textViews[4].setText("=")
+                textViews[5].setText("*")
 
                 val speed = editTexts[1].text.toString().toDoubleOrNull()
                 val time = editTexts[2].text.toString().toDoubleOrNull()
@@ -245,6 +262,9 @@ class TriangleConstraintLayout
                 }
             } else if ((bitset shr 1) and 1 == 0) {
                 editTexts[1].isEnabled = false
+                textViews[3].setText("=")
+                textViews[4].setText("/")
+                textViews[5].setText("=")
 
                 val distance = editTexts[0].text.toString().toDoubleOrNull()
                 val time = editTexts[2].text.toString().toDoubleOrNull()
@@ -255,6 +275,9 @@ class TriangleConstraintLayout
                 }
             } else if ((bitset shr 2) and 1 == 0) {
                 editTexts[2].isEnabled = false
+                textViews[3].setText("/")
+                textViews[4].setText("=")
+                textViews[5].setText("=")
 
                 val distance = editTexts[0].text.toString().toDoubleOrNull()
                 val speed = editTexts[1].text.toString().toDoubleOrNull()
